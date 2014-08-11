@@ -1,0 +1,1 @@
+Simple sandbox for sdl2, opengl3.3, and librocket. Includes simple file system watch from https://code.google.com/p/simplefilewatcher/ to provide dynamic UI reloading on change.

@@ -1,0 +1,7 @@
+bin/*
+ipch/*
+*.opensdf
+*.sdf
+*.suo
+sdlsandbox/Debug/*
+*.vcxproj.user
