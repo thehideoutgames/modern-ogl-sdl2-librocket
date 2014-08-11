@@ -505,9 +505,7 @@ void RocketSDL2ModernOpenglRenderInterface::RenderGeometry(
     // Index buffer
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
-	glEnable(GL_BLEND);
-
-    // Draw the triangles !
+	// Draw the triangles !
     glDrawElements(
             GL_TRIANGLES,      // mode
             num_indices,    // count
@@ -515,13 +513,11 @@ void RocketSDL2ModernOpenglRenderInterface::RenderGeometry(
             (void*)0           // element array buffer offset
     );
 
-	glDisable(GL_BLEND);
-
 	glDisableVertexAttribArray(0);
 	//glDisableVertexAttribArray(1);
 	
 	glDeleteBuffers(1, &vertexbuffer);
-	//glDeleteBuffers(1, &uvbuffer);
+	glDeleteBuffers(1, &uvbuffer);
 	glDeleteBuffers(1, &elementbuffer);
     
 	glDisable(GL_BLEND);
