@@ -27,7 +27,7 @@ void CTexture::LoadTexture(std::string filename)
 	SDL_Surface *tex_img = IMG_Load(_filename.c_str());
 	
 	glGenTextures(1, &_gl_handle);
-	BindTexture(); //glBindTexture(GL_TEXTURE_2D, _gl_handle);
+	BindTexture();
 	glTexImage2D(GL_TEXTURE_2D,	0, GL_RGBA, tex_img->w, tex_img->h, 0, GL_RGB, GL_UNSIGNED_BYTE, tex_img->pixels);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -44,7 +44,7 @@ void CTexture::LoadTextureAlpha(std::string filename)
 	SDL_Surface *tex_img = IMG_Load(_filename.c_str());
 	
 	glGenTextures(1, &_gl_handle);
-	BindTexture(); //glBindTexture(GL_TEXTURE_2D, _gl_handle);
+	BindTexture();
 	glTexImage2D(GL_TEXTURE_2D,	0, GL_RGBA, tex_img->w, tex_img->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_img->pixels);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -57,8 +57,9 @@ void CTexture::LoadTextureAlpha(std::string filename)
 
 void CTexture::CreateTexture(unsigned char * data, unsigned int w, unsigned int h)
 {
+	_filename = "(generated texture)";
 	glGenTextures(1, &_gl_handle);
-	BindTexture(); //glBindTexture(GL_TEXTURE_2D, _gl_handle);
+	BindTexture();
 	glTexImage2D(GL_TEXTURE_2D,	0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, (const GLvoid*)data);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

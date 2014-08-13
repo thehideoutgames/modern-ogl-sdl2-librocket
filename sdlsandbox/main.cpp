@@ -62,6 +62,16 @@ public:
 	}
 };
 
+class RocketListener : public Rocket::Core::EventListener
+{
+public:
+
+	virtual void ProcessEvent(Rocket::Core::Event& event)
+	{
+		std::cout << "type " << event.GetType().CString() << " element name " << event.GetTargetElement()->GetId().CString() << std::endl;
+	}
+
+};
 
 
 int main(int argc, char *argv[])
@@ -117,6 +127,8 @@ int main(int argc, char *argv[])
 	{
 		std::cout << "glew init failed" << std::endl;
 	}
+
+	glDisable(GL_CULL_FACE);
 
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -178,12 +190,6 @@ int main(int argc, char *argv[])
 
 	GLuint programID = LoadShaders( "test.vert", "test.frag" );
 
-
-
-
-
-
-
 	// Create the object
     FW::FileWatcher* fileWatcher = new FW::FileWatcher();
 
@@ -192,17 +198,23 @@ int main(int argc, char *argv[])
     // add a directory watch
     FW::WatchID watchid = fileWatcher->addWatch(".\\assets", listener);
 
-
-
-
+	RocketListener rocket_listener;
+	//document->
+	auto the_button = document->GetElementById("the_button");
+	if(the_button != NULL)
+	{
+		std::cout << "found the button, registering for events" << std::endl;
+		the_button->AddEventListener("click", &rocket_listener);
+	}
+	else
+	{
+		std::cout << "did not find the button!" << std::endl;
+	}
 
 
 	bool quit = false;
 	while(!quit)
 	{
-		SDL_Event evt;
-
-		
 		fileWatcher->update();
 
 		if(listener->has_changes())
@@ -227,9 +239,8 @@ int main(int argc, char *argv[])
 				}
 			}
 		}
-
-
-
+		
+		SDL_Event evt;
 		while(SDL_PollEvent(&evt))
 		{
 			if(evt.type == SDL_KEYUP) std::cout << evt.key.keysym.sym << std::endl;

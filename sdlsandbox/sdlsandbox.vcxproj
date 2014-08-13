@@ -75,6 +75,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CompiledGeometry.cpp" />
     <ClCompile Include="CTexture.cpp" />
     <ClCompile Include="FileWatcher.cpp" />
     <ClCompile Include="FileWatcherLinux.cpp" />
@@ -82,9 +83,11 @@
     <ClCompile Include="FileWatcherWin32.cpp" />
     <ClCompile Include="load_shader.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="RocketDefaultKeymapping.cpp" />
     <ClCompile Include="RocketInterfaces.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CompiledGeometry.h" />
     <ClInclude Include="CTexture.h" />
     <ClInclude Include="FileWatcher.h" />
     <ClInclude Include="FileWatcherImpl.h" />
