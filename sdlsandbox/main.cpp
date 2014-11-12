@@ -1,19 +1,14 @@
-#include <tchar.h>
 #include <stdio.h>
+#include <iostream>
 
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
-//
 
 #include <SDL2/SDL.h>
-
 #include <SDL2/SDL_opengl.h>
 #include <SDL2/SDL_image.h>
-#include <SDL2/SDL_mixer.h>
-
-#include <iostream>
 
 #include <Rocket/Core.h>
 
@@ -22,6 +17,12 @@
 #include "RocketInterfaces.h"
 
 #include "FileWatcherImpl.h"
+
+#if defined(WIN32) || defined(_WIN32)
+#define PATH_SEPARATOR "\\"
+#else
+#define PATH_SEPARATOR "/"
+#endif
 
 class UpdateListener : public FW::FileWatchListener
 {
@@ -35,15 +36,15 @@ public:
         switch(action)
         {
         case FW::Actions::Add:
-            std::cout << "File (" << dir + "\\" + filename << ") Added! " <<  std::endl;
-            break;
+			std::cout << "File (" << dir + PATH_SEPARATOR + filename << ") Added! " <<  std::endl;
+			break;
         case FW::Actions::Delete:
-            std::cout << "File (" << dir + "\\" + filename << ") Deleted! " << std::endl;
-            break;
+			std::cout << "File (" << dir + PATH_SEPARATOR + filename << ") Deleted! " << std::endl;
+			break;
         case FW::Actions::Modified:
-            std::cout << "File (" << dir + "\\" + filename << ") Modified! " << std::endl;
-			_changed_files.push_back(dir + "\\" + filename);
-            break;
+			std::cout << "File (" << dir + PATH_SEPARATOR + filename << ") Modified! " << std::endl;
+			_changed_files.push_back(dir + PATH_SEPARATOR + filename);
+			break;
         default:
             std::cout << "Should never happen!" << std::endl;
 		}
@@ -91,6 +92,7 @@ int main(int argc, char *argv[])
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
@@ -103,29 +105,13 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	float start_time = SDL_GetTicks() / 1000.0f;
-
 	auto glContext = SDL_GL_CreateContext(window);
-	//int oglIdx = -1;
- //   int nRD = SDL_GetNumRenderDrivers();
- //   for(int i=0; i<nRD; i++)
- //   {
- //       SDL_RendererInfo info;
- //       if(!SDL_GetRenderDriverInfo(i, &info))
- //       {
- //           if(!strcmp(info.name, "opengl"))
- //           {
- //               oglIdx = i;
- //           }
- //       }
- //   }
-
-//	SDL_Renderer * renderer = SDL_CreateRenderer(window, oglIdx, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
 	glewExperimental = true;
 	if (glewInit() != GLEW_OK)
 	{
 		std::cout << "glew init failed" << std::endl;
+		return -1;
 	}
 
 	glDisable(GL_CULL_FACE);
@@ -146,17 +132,23 @@ int main(int argc, char *argv[])
 	Rocket::Core::FontDatabase::LoadFontFace("./assets/Delicious-Roman.otf");
 
 	//Rocket::Core::FontDatabase::LoadFontFace("./assets/SourceCodePro-Black.ttf");
-	Rocket::Core::FontDatabase::LoadFontFace("./assets/SourceCodePro-Bold.ttf", "SourceCodePro", Rocket::Core::Font::Style::STYLE_NORMAL, Rocket::Core::Font::Weight::WEIGHT_BOLD);
-	Rocket::Core::FontDatabase::LoadFontFace("./assets/SourceCodePro-Regular.ttf", "SourceCodePro", Rocket::Core::Font::Style::STYLE_NORMAL, Rocket::Core::Font::Weight::WEIGHT_NORMAL);
+	Rocket::Core::FontDatabase::LoadFontFace("./assets/SourceCodePro-Bold.ttf"); //, "SourceCodePro", Rocket::Core::Font::Style::STYLE_NORMAL, Rocket::Core::Font::Weight::WEIGHT_BOLD);
+	Rocket::Core::FontDatabase::LoadFontFace("./assets/SourceCodePro-Regular.ttf"); //, "SourceCodePro", Rocket::Core::Font::Style::STYLE_NORMAL, Rocket::Core::Font::Weight::WEIGHT_NORMAL);
 
 	Rocket::Core::Context* context = Rocket::Core::CreateContext("default", Rocket::Core::Vector2i(GAME_XRES, GAME_YRES));
 
 	Rocket::Core::ElementDocument* document = context->LoadDocument("./assets/demo.rml");
 
-	if (document != NULL)
+	if(document)
 	{
 		document->Show();
 		document->RemoveReference();
+		std::cout << "Document loaded" << std::endl;
+	}
+	else
+	{
+		std::cerr << "Document is NULL" << std::endl;
+		return -1;
 	}
 
 	GLuint VertexArrayID;
@@ -183,11 +175,6 @@ int main(int argc, char *argv[])
 		if (joy) std::cout << "Gamepad Detected" << std::endl;	
 	}
 
-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 4, 4096) == -1)
-	{
-		std::cout << "mixer open audio failed" << std::endl;
-	}
-
 	GLuint programID = LoadShaders( "test.vert", "test.frag" );
 
 	// Create the object
@@ -196,7 +183,7 @@ int main(int argc, char *argv[])
 	auto listener = new UpdateListener();
 
     // add a directory watch
-    FW::WatchID watchid = fileWatcher->addWatch(".\\assets", listener);
+	FW::WatchID watchid = fileWatcher->addWatch("assets", listener);
 
 	RocketListener rocket_listener;
 	//document->
@@ -244,7 +231,7 @@ int main(int argc, char *argv[])
 		while(SDL_PollEvent(&evt))
 		{
 			if(evt.type == SDL_KEYUP) std::cout << evt.key.keysym.sym << std::endl;
-			if(evt.type == SDL_KEYUP && evt.key.keysym.scancode == SDL_Scancode::SDL_SCANCODE_ESCAPE)
+			if(evt.type == SDL_KEYUP && evt.key.keysym.scancode == SDL_SCANCODE_ESCAPE)
 			{
 				std::cout << "exiting" << std::endl;
 				quit = true;

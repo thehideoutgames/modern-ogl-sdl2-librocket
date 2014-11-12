@@ -75,4 +75,4 @@ public:
 	virtual void ReleaseTexture(Rocket::Core::TextureHandle texture_handle);
 };
 
-#endif _ROCKET_INTERFACES_H_
+#endif // _ROCKET_INTERFACES_H_

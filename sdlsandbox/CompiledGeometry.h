@@ -40,4 +40,4 @@ public:
 	void render(const Rocket::Core::Vector2f& translation, int w_width, int w_height);
 };
 
-#endif _COMPILED_GEOMETRY_H_
+#endif // _COMPILED_GEOMETRY_H_
